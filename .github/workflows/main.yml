@@ -1,0 +1,55 @@
+name: Android CI - Polygon Analyzer
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 先检查项目配置
+      - name: Check project configuration
+        run: ./gradlew projects
+
+      # 直接构建APK，跳过clean步骤
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      # 只在push到main分支时发布版本
+      - name: Release to GitHub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Polygon Analyzer v1.0.${{ github.run_number }}
+          files: app/build/outputs/apk/release/app-release.apk
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 上传构建产物作为备份
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: polygon-analyzer-apk
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 30
