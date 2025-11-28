@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">多边形成绩分析</string>
+    <string name="subject_list">科目列表</string>
+    <string name="add_subject">添加科目</string>
+    <string name="polygon_chart">多边形图表</string>
+    <string name="subject_name">科目名称</string>
+    <string name="full_score">满分</string>
+    <string name="current_score">当前分数</string>
+    <string name="save">保存</string>
+    <string name="delete">删除</string>
+    <string name="no_data">暂无数据</string>
+</resources>
